@@ -15,6 +15,7 @@ const float epi= 0.5;
 unsigned long timer;
 bool triger =true;
 bool triger2 =false;
+bool readyTriger=false;
 unsigned long startTime;
 void setup() {
   lcd.begin();
@@ -34,17 +35,19 @@ void setup() {
 void loop() {
   
   delay(2000);
-  float h = dht.readHumidity();
-  float t = dht.readTemperature();
-  if (isnan(h) || isnan(t)) {
-    Serial.println(F("Failed to read from DHT sensor 0!"));
-    return;
-  }
+  
 
   float h1 = dht1.readHumidity();
   float t1 = dht1.readTemperature();
   if (isnan(h1) || isnan(t1)) {
     Serial.println(F("Failed to read from DHT sensor 1!"));
+    return;
+  }
+
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+  if (isnan(h) || isnan(t)) {
+    Serial.println(F("Failed to read from DHT sensor 0!"));
     return;
   }
 
@@ -79,9 +82,12 @@ void loop() {
         digitalWrite(HEATER,HIGH);
       }
 
+    }
   }
+  if((((h2+h1)/2)-h)>=15){
+    readyTriger=true;
   }
-  if (millis()-startTime>6000)
+  if (readyTriger)
   {
     if((((h2+h1)/2)-h)<=epi){
       digitalWrite(HEATER,LOW);
@@ -110,13 +116,13 @@ void loop() {
   Serial.print(F("%  Temperature: "));
   Serial.print(t);
   Serial.println(F("°C "));
- Serial.println("top sensor1");
+  Serial.println("top sensor1");
   Serial.print(F("Humidity: "));
   Serial.print(h1);
   Serial.print(F("%  Temperature: "));
   Serial.print(t1);
   Serial.println(F("°C "));
-Serial.println("top sensor2");
+  Serial.println("top sensor2");
   Serial.print(F("Humidity: "));
   Serial.print(h2);
   Serial.print(F("%  Temperature: "));
